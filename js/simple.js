@@ -1,6 +1,6 @@
 import {rbinom_fast} from "./func.js";
 
-function simulate(N, p0, max_gen, s, h){
+function simulate(N, p0, max_gen, s1, s2){
   N = Number(N);
   p0 = Number(p0);
   max_gen = Number(max_gen);
@@ -9,7 +9,7 @@ function simulate(N, p0, max_gen, s, h){
   const series = [p];
 
   for(let t = 0; t < max_gen; t++){
-    p = (p*p * (1+s) + p*(1-p)*(1+s*h)) / (p*p * (1+s) + 2*p*(1-p)*(1+s*h) + (1-p)*(1-p));
+    p = (p*p * (1+s2) + p*(1-p)*(1+s1)) / (p*p * (1+s2) + 2*p*(1-p)*(1+s1) + (1-p)*(1-p));
     let ac = rbinom_fast(2*N, p);
     
     p = ac / (2*N);
@@ -43,8 +43,8 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   stopRequested = false;
 
   const N = parseInt(document.getElementById("N").value, 10);
-  const s = parseFloat(document.getElementById("s").value);
-  const h = parseFloat(document.getElementById("h").value);
+  const s1 = parseFloat(document.getElementById("s1").value);
+  const s2 = parseFloat(document.getElementById("s2").value);
   const p0 = parseFloat(document.getElementById("p0").value);
   const maxgen = parseInt(maxginput.value, 10);
   const maxite = parseInt(maxiteinput.value, 10);
@@ -58,12 +58,11 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     Number.isNaN(p0) || p0 < 0 || p0 > 1 || 
     !Number.isSafeInteger(maxgen) || maxgen < 1 || 
     !Number.isSafeInteger(maxite) || maxite < 1 || 
-    Number.isNaN(s) || Number.isNaN(h) || s < -1.0 || s*h < -1.0) {
+    Number.isNaN(s1) || Number.isNaN(s2) || s1 < -1.0 || s2 < -1.0) {
     alert("パラメータが範囲外です。");
     return;
   }
 
-  const labels = Array.from({ length: maxgen + 1 }, (_, i) => i);
   const datasets = [];
   const maxplot = 50;
 
@@ -79,7 +78,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
       break;
     }
 
-    const series = simulate(N, p0, maxgen, s, h);
+    const series = simulate(N, p0, maxgen, s1, s2);
 
     if(series[series.length - 1] == 0.0){
       extinct++;
@@ -108,7 +107,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     }
 
     if(r == maxplot || r == maxite){
-      chart.data.labels = Array.from({ length: max_length + 1 }, (_, i) => i);;
+      chart.data.labels = Array.from({ length: max_length }, (_, i) => i);;
       chart.data.datasets = datasets;
       chart.update();
       await nap();
@@ -138,34 +137,25 @@ Ninput.addEventListener("input", () => {
   }
 });
 
-const sinput = document.getElementById("s");
-sinput.addEventListener("input", () => {
-  const s = parseFloat(sinput.value);
-  const h = parseFloat(hinput.value);
+const s1input = document.getElementById("s1");
+s1input.addEventListener("input", () => {
+  const s1 = parseFloat(s1input.value);
 
-  if (isNaN(s) || isNaN(h) || s*h < -1.0) {
-    sinput.classList.add("error");
-    hinput.classList.add("error");
-  }else if(s >= -1.0){
-    sinput.classList.remove("error");
-    hinput.classList.remove("error");
+  if (isNaN(s1) || s1 < -1.0) {
+    s1input.classList.add("error");
   }else{
-    hinput.classList.remove("error");
+    s1input.classList.remove("error");
   }
 });
 
-const hinput = document.getElementById("h");
-hinput.addEventListener("input", () => {
-  const s = parseFloat(sinput.value);
-  const h = parseFloat(hinput.value);
-  if (isNaN(s) || isNaN(h) || s*h < -1.0) {
-    sinput.classList.add("error");
-    hinput.classList.add("error");
-  }else if(s >= -1.0){
-    sinput.classList.remove("error");
-    hinput.classList.remove("error");
+const s2input = document.getElementById("s2");
+s2input.addEventListener("input", () => {
+  const s2 = parseFloat(s2input.value);
+
+  if (isNaN(s2) || s2 < -1.0) {
+    s2input.classList.add("error");
   }else{
-    hinput.classList.remove("error");
+    s2input.classList.remove("error");
   }
 });
 
