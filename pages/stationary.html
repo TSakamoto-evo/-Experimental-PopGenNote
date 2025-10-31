@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1-2 定常分布</title>
+    <link rel="stylesheet" href="../css/style1.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div style="position: absolute; top: 10px; left: 10px;">
+      <a href="../index.html"
+        style="color: white; font-weight: bold;">
+        ← 親ページへ戻る
+      </a>
+    </div>
+    <h1>1-2. 定常分布</h1>
+    <div class="controls">
+      <legend><b>パラメータ指定</b></legend>
+
+      <div class="input-group">
+        <label for="N">集団サイズ \(N\):</label> <input type="number" id="N" value="10000" min="1">
+      </div>
+
+      <div class="input-group">
+        <label for="s1"> Aa個体への選択 \(s_1\):</label> <input type="number" id="s1" value="0.0" min="-1.0">
+      </div>
+
+      <div class="input-group">
+        <label for="s2"> AA個体への選択 \(s_2\):</label> <input type="number" id="s2" value="0.0" min="-1.0">
+      </div>
+
+      <div class="input-group">
+        <label for="u">a\(\to\)Aの突然変異率:</label> <input type="number" id="u" value="1e-5" min="0.0" max="1.0">
+      </div>
+      <div class="input-group">
+        <label for="v">A\(\to\)aの突然変異率:</label> <input type="number" id="v" value="1e-5" min="0.0" max="1.0">
+      </div>
+      <div class="input-group">
+        <label for="m">移入率:</label> <input type="number" id="m" value="0.0" min="0.0" max="1.0">
+      </div>
+      <div class="input-group">
+        <label for="pm">移入者のアレルA頻度:</label> <input type="number" id="pm" value="0.0" min="0.0" max="1.0">
+      </div>
+      <div class="input-group">
+        <label for="burnin">burn-in (\(\times 2N\)):</label> <input type="number" id="burnin" value="10" min="0">
+      </div>
+      <div class="input-group">
+        <label for="maxgen"> 最大世代数(\(\times 2N\)):</label> <input type="number" id="maxgen" value="1000" min="0">
+      </div>
+      <div class="input-group">
+        <label for="sampling"> サンプリング間隔(\(\times 2N\)):</label> <input type="number" id="sampling" value="0.01" min="0.0">
+      </div>
+      <div class="input-group">
+        <label for="bin"> ビン数:</label> <input type="number" id="bin" value="50" min="0">
+      </div>
+
+      <button id="runBtn">▶ 実行</button>
+      <button id="stopBtn">⏹ 停止</button>
+    </div>
+    適応度: aa: \(1\), Aa: \(1+s_1\), AA: \(1+s_2\)<br>
+    <p id="message">ここに結果が出ます。</p>
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+    <script type="module" src="../js/stationary.js"></script>
+  </body>
+</html>
