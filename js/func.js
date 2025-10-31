@@ -165,7 +165,12 @@ export function rbinom_fast(n, p){
   }
 
   if(n * q <= 10.0){
-    const ret = rbinom_binv(n, q);
+    let ret = rbinom_binv(n, q);
+
+    while(ret == -1){
+      ret = rbinom_binv(n, q);
+    }
+
     if(p > 0.5){
       return(n - ret);
     }else{
