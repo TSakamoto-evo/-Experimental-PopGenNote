@@ -1,4 +1,4 @@
-import rbinom_fast from "func.js";
+import rbinom_fast from "./func.js";
 
 function simulate(N, p0, max_gen, s, h){
   N = Number(N);
