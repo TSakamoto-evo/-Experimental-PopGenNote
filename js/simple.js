@@ -1,14 +1,4 @@
-function rbinom(n, p) {
-  let x = 0;
-
-  for (let i = 0; i < n; i++){
-    if (Math.random() < p){
-      x++;
-    }
-  }
-
-  return x;
-}
+import rbinom_fast from "func.js";
 
 function simulate(N, p0, max_gen, s, h){
   N = Number(N);
@@ -20,7 +10,8 @@ function simulate(N, p0, max_gen, s, h){
 
   for(let t = 0; t < max_gen; t++){
     p = (p*p * (1+s) + p*(1-p)*(1+s*h)) / (p*p * (1+s) + 2*p*(1-p)*(1+s*h) + (1-p)*(1-p));
-    const ac = rbinom(2*N, p);
+    let ac = rbinom_fast(2*N, p);
+    
     p = ac / (2*N);
     series.push(p);
 
@@ -76,14 +67,15 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   const datasets = [];
   const maxplot = 50;
 
-  let fixed = 0;
-  let extinct = 0;
-  let unfinished = 0;
+  let fixed = 0, extinct = 0, unfinished = 0;
+  let sum_fixed = 0.0, sum_extinct = 0.0;
+
   let max_length = 0;
 
   for (let r = 1; r <= maxite; r++) {
     if (stopRequested) {
-      msgEl.textContent = `⏹ 中断しました（${r - 1}/${maxite}ランまで実行)\n固定: ${fixed}, 消失: ${extinct}, 多型: ${unfinished}`;
+      msgEl.textContent = `⏹ 中断しました（${r - 1}/${maxite}ランまで実行)\n固定: ${fixed}, 消失: ${extinct}, 多型: ${unfinished}
+      平均固定時間: ${Math.round(sum_fixed / fixed*10)/10} 世代, 平均消失時間: ${Math.round(sum_extinct / extinct*10)/10} 世代`;
       break;
     }
 
@@ -91,8 +83,10 @@ document.getElementById("runBtn").addEventListener("click", async () => {
 
     if(series[series.length - 1] == 0.0){
       extinct++;
+      sum_extinct += series.length - 1;
     }else if(series[series.length - 1] == 1.0){
       fixed++;
+      sum_fixed += series.length - 1;
     }else{
       unfinished++;
     }
@@ -121,8 +115,9 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     }
 
     if(r == maxite){
-      msgEl.textContent = `⏹ 終了しました（${maxite}ラン実行)\n固定: ${fixed}, 消失: ${extinct}, 多型: ${unfinished}`;
-    }else if(r % 100 == 0){
+      msgEl.textContent = `⏹ 終了しました（${maxite}ラン実行)\n固定: ${fixed}, 消失: ${extinct}, 多型: ${unfinished}
+      平均固定時間: ${Math.round(sum_fixed / fixed*10)/10} 世代, 平均消失時間: ${Math.round(sum_extinct / extinct*10)/10} 世代`;
+    }else if(r % 1000 == 0){
       msgEl.textContent = `固定: ${fixed}, 消失: ${extinct}, 多型: ${unfinished}`;
       await nap();
     }
